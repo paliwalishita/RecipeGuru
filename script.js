@@ -5,9 +5,10 @@ const recipeDetailsContent = document.querySelector('.recipe-details-content');
 const recipeCloseBtn= document.querySelector('.recipe-closeBtn');
 
 //Function to get recipes from API
-const fetchRecipes = async (recipe) => {
+const fetchRecipes = async (recipeInput) => {
     recipeContainer.innerHTML="Fetching Recipes....";
-    const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${recipe}`;
+    try{
+    const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${recipeInput}`;
     const response = await fetch(url);
     const data = await response.json();
     console.log(data.meals);
@@ -20,7 +21,7 @@ const fetchRecipes = async (recipe) => {
         <h3>${meal.strMeal}</h3>
         <p><span>${meal.strArea} </span>Dish</p>
         <p>Belongs to <span>${meal.strCategory} </span> Category </p>
-      `
+      `;
       const button = document.createElement('button');
       button.textContent = "View Recipe";
       recipeDiv.appendChild(button);
@@ -30,6 +31,9 @@ const fetchRecipes = async (recipe) => {
       })
       recipeContainer.appendChild(recipeDiv);
     });
+  } catch(error){
+    recipeContainer.innerHTML= "<h2>Error in fetching recipes...</h2>";
+  }
 }  
 //Function to fetch ingredients 
 const fetchIngredients = meal => {
@@ -65,9 +69,13 @@ recipeCloseBtn.addEventListener('click', e => {
 
 searchBtn.addEventListener('click', e => { 
     e.preventDefault();
-    const recipe = searchBox.value.trim();
+    const recipeInput = searchBox.value.trim();
+    if(!recipeInput){
+       recipeContainer.innerHTML = `<h2> Please enter a valid recipe in the search box. </h2>`;
+       return;
+    }
 
     //update the details with recipes
-   fetchRecipes(recipe);
+   fetchRecipes(recipeInput);
    console.log('button clicked');
 });
